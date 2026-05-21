@@ -12,19 +12,9 @@ jobs:
 
     steps:
       - name: Send notification to Mattermost
-        run: |
-          BRANCH="${GITHUB_REF_NAME}"
-          AUTHOR="${GITHUB_ACTOR}"
-          REPO="${GITHUB_REPOSITORY}"
-          SHA="${GITHUB_SHA}"
-
-          MESSAGE="🚀 New push to s-deed on branch ${BRANCH}
-👤 Author: ${AUTHOR}
-🔗 Commit: https://github.com/${REPO}/commit/${SHA}"
-
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            --data "{\"text\":\"$(echo "$MESSAGE" | sed ':a;N;$!ba;s/\n/\\n/g')\"}" \
-            "$MATTERMOST_WEBHOOK_URL"
         env:
-          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{"text":"🚀 New push detected in s-deed"}'
