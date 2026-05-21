@@ -17,4 +17,6 @@ jobs:
         run: |
           curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d '{"text":"🚀 New push detected in s-deed"}'
+            -d '{
+              "text": "### 🚀 New Code Push Detected\n**Repository:** `${{ github.repository }}`\n**Branch:** `${{ github.ref_name }}`\n**Author:** ${{ github.actor }}\n\n**Latest Commit:**\n> ${{ github.event.head_commit.message }}\n\n[🔗 View Comparison / Changes](${{ github.event.compare }})"
+            }'
