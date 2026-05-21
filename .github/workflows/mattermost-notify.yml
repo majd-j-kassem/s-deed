@@ -18,5 +18,10 @@ jobs:
           curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d '{
-              "text": "### 🚀 New Code Push Detected\n**Repository:** `${{ github.repository }}`\n**Branch:** `${{ github.ref_name }}`\n**Author:** ${{ github.actor }}\n\n**Latest Commit:**\n> ${{ github.event.head_commit.message }}\n\n[🔗 View Comparison / Changes](${{ github.event.compare }})"
+                "text": "message",
+                "username": "GitHub Actions",
+                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+
+
+
             }'
