@@ -24,5 +24,7 @@ jobs:
 
           curl -X POST \
             -H "Content-Type: application/json" \
-            -d "{\"text\":\"${MESSAGE}\"}" \
-            "${{ secrets.MATTERMOST_WEBHOOK_URL }}"
+            --data "{\"text\":\"$(echo "$MESSAGE" | sed ':a;N;$!ba;s/\n/\\n/g')\"}" \
+            "$MATTERMOST_WEBHOOK_URL"
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
