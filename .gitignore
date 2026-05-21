@@ -1,0 +1,14 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.DS_Store
+
+# Research outputs (Ignore generated binaries/data, keep architecture)
+results/data/*.csv
+results/plots/*.png
+results/plots/*.pdf
+!results/data/.gitkeep
+!results/plots/.gitkeep
