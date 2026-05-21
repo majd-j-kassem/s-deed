@@ -15,13 +15,19 @@ jobs:
         env:
           WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
         run: |
+          # Safe injection of string variables using an intermediate environment block
+          COMMIT_MSG=$(cat << 'EOF'
+          ${{ github.event.head_commit.message }}
+          EOF
+          )
+          
+          # Clean carriage returns out of multi-line commit text loops
+          COMMIT_MSG=$(echo "$COMMIT_MSG" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
+
           curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d '{
-                "text": "message",
-                "username": "GitHub Actions",
-                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-
-
-
-            }'
+            -d "{
+                \"username\": \"GitHub Actions\",
+                \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
+                \"text\": \"### 🚀 New Code Push\\n**Branch:** \`${{ github.ref_name }}\`\\n**Author:** ${{ github.actor }}\\n\\n**Commit Message:**\\n> $COMMIT_MSG\\n\\n[🔗 View Changes on GitHub](${{ github.event.head_commit.url }})\"
+            }"
