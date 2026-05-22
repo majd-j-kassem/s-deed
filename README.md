@@ -96,3 +96,5 @@ fixed random seeds
 ## 🧠 Research Positioning
 
 This framework studies decision degradation under uncertainty, focusing on failure regimes of risk-aware planning rather than trajectory optimization or tracking accuracy.
+
+## Communication: Add Mattermost Wehook

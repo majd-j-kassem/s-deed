@@ -1,0 +1,40 @@
+[project]
+name = "s-deed"
+version = "0.1.0"
+description = "Stochastic Autonomous Vehicle Tracking Framework"
+requires-python = ">=3.10"
+
+[tool.ruff]
+# Core environment properties
+target-version = "py310"
+line-length = 88
+
+# Advanced output presentation styles
+output-format = "grouped"
+show-fixes = true
+
+[tool.ruff.lint]
+# Active Code Quality Checking Groups
+# E/W = Pycodestyle (PEP 8 formatting constraints)
+# F   = Flake8 (Logical errors, undefined items, unused components)
+# B   = Bugbear (Reliability traps and hidden bug patterns)
+# I   = Isort (Automated alphabetic import organization blocks)
+# ARG = Unused arguments (Catches unused parameters in functions)
+select = ["E", "W", "F", "B", "I", "ARG"]
+
+# Specific error codes to bypass if necessary
+ignore = []
+
+# Protect specific variables from triggering unused-variable rules
+dummy-variable-rgx = "^(_+|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.isort]
+# Forces all internal module tracking utilities to stay grouped
+known-first-party = ["utils", "environment"]
+
+[tool.ruff.format]
+# Style rules matching production standards
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
