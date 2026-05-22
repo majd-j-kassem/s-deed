@@ -1,7 +1,9 @@
 from typing import Any, Dict, Tuple
+
 import numpy as np
 from numpy.typing import NDArray
-from noise_model import ContextDependentGMM 
+
+from noise_model import ContextDependentGMM
 
 
 class StochasticEnv:
@@ -14,7 +16,7 @@ class StochasticEnv:
         self.ego_pos: NDArray[np.float64] = np.array(env_cfg["ego_start"], dtype=float)
         self.ego_speed: float = float(env_cfg["ego_speed"])
         self.goal: NDArray[np.float64] = np.array(env_cfg["goal"], dtype=float)
-        
+
         self.obstacle_pos: NDArray[np.float64] = np.array(
             env_cfg["obstacle_start"], dtype=float
         )
@@ -33,14 +35,14 @@ class StochasticEnv:
     def step(
         self, steering_angle: float, noise_enabled: bool = True
     ) -> Tuple[NDArray[np.float64], NDArray[np.float64], bool, bool]:
-        
+
         # 1. Clear, Explicit Ego Kinematics (No cross-contamination)
         delta_x = self.ego_speed * np.cos(steering_angle) * self.dt
         delta_y = self.ego_speed * np.sin(steering_angle) * self.dt
-        
+
         self.ego_pos[0] = self.ego_pos[0] + delta_x
         self.ego_pos[1] = self.ego_pos[1] + delta_y
-        
+
         # 2. Stochastic Obstacle Kinematics (Isolated generation)
         velocity_drift: NDArray[np.float64] = self.rng.normal(
             loc=0.0, scale=0.05, size=2
@@ -65,5 +67,5 @@ class StochasticEnv:
         collision: bool = dist_to_obstacle < self.collision_threshold
         reached_goal: bool = dist_to_goal < 0.2
         done: bool = reached_goal or collision
-        
+
         return noisy_ego_pos, self.obstacle_pos.copy(), collision, done
