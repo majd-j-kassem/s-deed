@@ -27,3 +27,21 @@ jobs:
     - name: Run test suite
       run: |
         python -m pytest -v
+
+    - name: Notify Mattermost
+      if: always()  # This ensures notifications send even if tests fail
+      run: |
+        STATUS="${{ job.status }}"
+        TEXT="### CI Build Status: ${STATUS}\n**Repo:** ${{ github.repository }}\n**Branch:** ${{ github.ref_name }}\n**Commit:** ${{ github.sha }}"
+        
+        if [ "$STATUS" = "success" ]; then
+          COLOR="#00FF00"
+          TEXT="✅ ${TEXT}"
+        else
+          COLOR="#FF0000"
+          TEXT="❌ ${TEXT}"
+        fi
+
+        curl -i -X POST -H 'Content-Type: application/json' \
+        -d "{\"attachments\": [{\"color\": \"$COLOR\", \"text\": \"$TEXT\"}]}" \
+        ${{ secrets.MATTERMOST_WEBHOOK_URL }}
