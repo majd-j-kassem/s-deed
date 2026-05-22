@@ -38,3 +38,24 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.pytest.ini_options]
+# Minimum version of pytest required
+minversion = "7.0"
+
+# Core execution flags:
+#  -v: Verbose output (lists each test name)
+#  --tb=short: Shortens error tracebacks to keep console logs highly readable
+#  --strict-markers: Prevents typos in custom test tagging
+addopts = "-v --tb=short --strict-markers"
+
+# Directories where pytest should automatically look for test suites
+testpaths = [
+    "tests",
+    ".",
+]
+
+# File naming conventions for automatic test discovery
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
