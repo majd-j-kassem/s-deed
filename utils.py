@@ -12,10 +12,15 @@ def load_config(config_path="config.yaml"):
 
 
 def enforce_reproducibility(seed: int):
+    # Set standard library seeds
     os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)
 
+    # Set numpy global seed (for legacy calls) and return modern generator
+    np.random.seed(seed)
     rng = np.random.default_rng(seed)
+
+    # Configure plotting backend
     matplotlib.use("Agg")
 
     return rng

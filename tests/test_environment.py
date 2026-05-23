@@ -13,7 +13,7 @@ def get_mock_config():
         "obstacle_velocity": [0.0, -0.5],
         "goal": [10.0, 0.0],
         "collision_threshold": 0.4,
-        "critical_distance": 3.0
+        "critical_distance": 3.0,
     }
     sim_cfg = {"dt": 0.1}
     return env_cfg, sim_cfg

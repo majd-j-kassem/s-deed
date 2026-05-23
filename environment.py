@@ -35,7 +35,6 @@ class StochasticEnv:
     def step(
         self, steering_angle: float, noise_enabled: bool = True
     ) -> Tuple[NDArray[np.float64], NDArray[np.float64], bool, bool]:
-
         # 1. Clear, Explicit Ego Kinematics (No cross-contamination)
         delta_x = self.ego_speed * np.cos(steering_angle) * self.dt
         delta_y = self.ego_speed * np.sin(steering_angle) * self.dt
