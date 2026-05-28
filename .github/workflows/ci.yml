@@ -38,9 +38,23 @@ jobs:
       if: always()
       run: |
         STATUS="${{ job.status }}"
-        TEXT="### CI Build Status: ${STATUS}\n**Repo:** ${{ github.repository }}\n**Branch:** ${{ github.ref_name }}"
-        COLOR="#FF0000"
-        [ "$STATUS" = "success" ] && COLOR="#00FF00" && TEXT="✅ ${TEXT}" || TEXT="❌ ${TEXT}"
+        REPO="${{ github.repository }}"
+        BRANCH="${{ github.ref_name }}"
+        
+        # Determine icon and color
+        if [ "$STATUS" = "success" ]; then
+          COLOR="#00FF00"
+          EMOJI="✅"
+        else
+          COLOR="#FF0000"
+          EMOJI="❌"
+        fi
+
+        # Clearer message formatting
+        TEXT="**CI Build Status:** ${EMOJI} ${STATUS^^}\n\n"
+        TEXT+="- **Repository:** \`${REPO}\`\n"
+        TEXT+="- **Branch:** \`${BRANCH}\`\n"
+        TEXT+="- **Event:** \`${{ github.event_name }}\`"
         
         curl -i -X POST -H 'Content-Type: application/json' \
         -d "{\"attachments\": [{\"color\": \"$COLOR\", \"text\": \"$TEXT\"}]}" \
