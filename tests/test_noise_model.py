@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from noise_model import ContextDependentGMM
+from src.noise_model import ContextDependentGMM
 
 # === FIXTURES ===
 

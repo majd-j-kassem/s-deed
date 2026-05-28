@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from environment import StochasticEnv
+from src.environment import StochasticEnv
 
 
 # Helper fixture to provide a standard configuration

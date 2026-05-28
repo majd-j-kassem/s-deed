@@ -3,7 +3,7 @@ from typing import Any, Dict, Tuple
 import numpy as np
 from numpy.typing import NDArray
 
-from noise_model import ContextDependentGMM
+from src.noise_model import ContextDependentGMM
 
 
 class StochasticEnv:
