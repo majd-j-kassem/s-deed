@@ -21,8 +21,9 @@ noise_model:
 
 estimator:
   num_particles: 200
-  process_noise: 0.01
-  measurement_noise: 0.03
+  process_noise: 0.01      # motion_sigma
+  measurement_noise: 0.03  # sensor_sigma
+  resample_threshold: 0.5  # N_eff ratio
 
 evaluation:
   breakdown_threshold_alpha: 0.05

@@ -1,10 +1,9 @@
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 
 import numpy as np
 
 
 class ContextDependentGMM:
-
     def __init__(self, rng: np.random.Generator, env_cfg: Dict[str, Any]) -> None:
         self.rng: np.random.Generator = rng
         # Component parameters (Nominal vs Anomalous)

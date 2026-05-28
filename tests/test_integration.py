@@ -1,9 +1,10 @@
 import numpy as np
 import pytest
 
-from environment import StochasticEnv
+from src.environment import StochasticEnv
 
 # === FIXTURES (The Setup Crew) ===
+
 
 @pytest.fixture
 def env_config():
@@ -15,10 +16,11 @@ def env_config():
         "obstacle_velocity": [0.0, -0.5],
         "goal": [10.0, 0.0],
         "collision_threshold": 0.4,
-        "critical_distance": 3.0
+        "critical_distance": 3.0,
     }
     sim_cfg = {"dt": 0.1}
     return env_cfg, sim_cfg
+
 
 @pytest.fixture
 def env(env_config):
@@ -27,7 +29,9 @@ def env(env_config):
     env_cfg, sim_cfg = env_config
     return StochasticEnv(rng=rng, env_cfg=env_cfg, sim_cfg=sim_cfg)
 
+
 # === TEST CASES (The Logic) ===
+
 
 def test_environment_deterministic_step(env):
     """Verifies horizontal ego movement works."""
@@ -38,7 +42,8 @@ def test_environment_deterministic_step(env):
 
 
 def test_environment_state_immutability(env):
-    """Verifies arrays returned are protected copies and cannot be modified externally."""
+    """Verifies arrays returned are protected copies and \
+        cannot be modified externally."""
     ego_gt, _ = env.get_ground_truth_states()
 
     # Attempt "malicious" modification
@@ -60,7 +65,7 @@ def test_environment_collision_trigger():
         "critical_distance": 3.0,
         "ego_speed": 1.0,
         "obstacle_velocity": [0.0, -0.5],
-        "goal": [10.0, 0.0]
+        "goal": [10.0, 0.0],
     }
     sim_cfg = {"dt": 0.1}
 
