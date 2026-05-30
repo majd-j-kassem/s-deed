@@ -4,35 +4,91 @@ import numpy as np
 
 
 class ContextDependentGMM:
-    def __init__(self, rng: np.random.Generator, env_cfg: Dict[str, Any]) -> None:
-        self.rng: np.random.Generator = rng
-        # Component parameters (Nominal vs Anomalous)
-        self.mu_nominal = np.array([0.0, 0.0])
-        self.sigma_nominal = 0.02
-        self.mu_anomalous = np.array([0.1, -0.1])
-        self.sigma_anomalous = 0.3
-        # Aligning perfectly with your environment configuration pattern
-        self.critical_distance: float = float(env_cfg.get("critical_distance", 3.0))
+    """
+    Stochastic noise generator based on Gaussian Mixture Model (GMM).
+    Switches between nominal and anomalous regimes based on environmental context.
+    All parameters are strictly loaded from the provided configuration dictionary.
+    """
+
+    def __init__(self, rng: np.random.Generator, noise_cfg: Dict[str, Any]) -> None:
+        self.rng = rng
+
+        # Nominal noise parameters
+        self.mu_nominal = np.array(noise_cfg["mu_nominal"], dtype=float)
+        self.sigma_nominal_base = float(noise_cfg["sigma_nominal"]["base"])
+        self.sigma_nominal_jitter = float(noise_cfg["sigma_nominal"]["jitter"])
+
+        # Anomalous noise parameters
+        mu_anom = noise_cfg["mu_anomalous"]
+        self.mu_anomalous_base = np.array(mu_anom["base"], dtype=float)
+        self.mu_anomalous_var = float(mu_anom["variability"])
+
+        sigma_anom = noise_cfg["sigma_anomalous"]
+        self.sigma_anomalous_base = float(sigma_anom["base"])
+        self.sigma_anomalous_jitter = float(sigma_anom["jitter"])
+
+        # Context switching parameters
+        cd_cfg = noise_cfg["critical_distance"]
+        self.base_cd = float(cd_cfg["base"])
+        self.adaptive = bool(cd_cfg["adaptive"])
+        self.adaptation_std = float(cd_cfg["adaptation_std"])
+
+        # Probability model parameters
+        prob_cfg = noise_cfg["anomaly_probability"]
+        self.base_rate = float(prob_cfg["base_rate"])
+        self.dist_mult = float(prob_cfg["distance_multiplier"])
+        self.max_prob = float(prob_cfg["max_anomaly_prob"])
+
+    def _effective_sigma(self, base: float, jitter: float) -> float:
+        """Returns sampled sigma incorporating jitter."""
+        return base + self.rng.normal(0.0, jitter)
+
+    def _effective_mu_anomalous(self) -> np.ndarray:
+        """Returns anomalous mean incorporating variability."""
+        return self.mu_anomalous_base + self.rng.normal(
+            0.0, self.mu_anomalous_var, size=2
+        )
+
+    def _effective_critical_distance(self) -> float:
+        """Returns critical distance with optional adaptive variability."""
+        if not self.adaptive:
+            return self.base_cd
+        return self.base_cd + self.rng.normal(0.0, self.adaptation_std)
 
     def sample_noise(self, dist_to_obstacle: float) -> np.ndarray:
-        """Samples 2D non-Gaussian noise based on the proximity context."""
-        # 1. Context Dependency: If close to the obstacle, anomaly probability spikes
-        if dist_to_obstacle < self.critical_distance:
-            p_anomalous = 0.7  # 70% chance of severe non-Gaussian noise
-        else:
-            p_anomalous = 0.05  # 5% baseline glitch chance
+        """
+        Samples noise based on distance to obstacle.
+        Higher probability of anomalous noise when within critical distance.
+        """
+        cd = self._effective_critical_distance()
 
-        # 2. Categorical Selection (Decide which distribution component to use)
+        # Determine anomaly probability based on distance
+        # Enforce max_prob when within critical distance to stress-test the estimator
+        if dist_to_obstacle < cd:
+            p_anomalous = self.max_prob
+        else:
+            p_anomalous = self.base_rate
+
+        # Sample regime choice
         use_anomalous = self.rng.random() < p_anomalous
 
-        # 3. Generate the actual structural sample
+        # Debugging output to track noise injection behavior
+        # print(f"DEBUG: Dist={dist_to_obstacle:.2f} | Anomalous={use_anomalous} | \
+        # Prob={p_anomalous:.2f}")
+
+        # Retrieve effective noise parameters
+        sigma_nom = self._effective_sigma(
+            self.sigma_nominal_base, self.sigma_nominal_jitter
+        )
+        sigma_anom = self._effective_sigma(
+            self.sigma_anomalous_base, self.sigma_anomalous_jitter
+        )
+
         if use_anomalous:
-            noise = self.rng.normal(
-                loc=self.mu_anomalous, scale=self.sigma_anomalous, size=2
-            )
-        else:
-            noise = self.rng.normal(
-                loc=self.mu_nominal, scale=self.sigma_nominal, size=2
+            # Apply anomalous noise regime
+            return self.rng.normal(
+                loc=self._effective_mu_anomalous(), scale=sigma_anom, size=2
             )
 
-        return noise
+        # Apply nominal noise regime
+        return self.rng.normal(loc=self.mu_nominal, scale=sigma_nom, size=2)
