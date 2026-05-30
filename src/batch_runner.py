@@ -74,15 +74,27 @@ class ExperimentRunner:
                     ]
                 )
 
-    def _save_summary(self):
-        """Saves final summary metrics as a JSON file."""
+    def _save_summary(self, results):
+        """Saves final summary metrics as a JSON file, \
+            incorporating simulation results."""
+
+        # Extracting meaningful metrics from the results dictionary
+        # Assuming 'errors' is a list and we want the last value or the mean
+        final_error = results.get("errors", [])[-1] if results.get("errors") else None
+
         summary = {
             "run_id": self.run_id,
             "params": {
                 "sigma": self.cfg["noise_model"]["sigma_anomalous"]["base"],
                 "prob": self.cfg["noise_model"]["anomaly_probability"]["base_rate"],
             },
+            "metrics": {
+                "final_error": final_error,
+                "total_steps": len(results.get("steps", [])),
+                "final_status": "completed",
+            },
         }
+
         with open(self.run_dir / "summary.json", "w") as f:
             json.dump(summary, f, indent=4)
 

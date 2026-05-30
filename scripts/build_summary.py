@@ -41,9 +41,18 @@ SUMMARY_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def extract_params(run_id):
+    """
+    Extracts sigma, probability, and seed parameters from directory names.
+    Uses flexible regex to handle timestamps and multiple seed markers.
+    """
+    # Look for sigma followed by digits
     match_sigma = re.search(r"sigma([0-9.]+)", run_id)
+    # Look for _p followed by digits
     match_p = re.search(r"_p([0-9.]+)", run_id)
-    match_seed = re.search(r"_s([0-9]+)", run_id)
+
+    # Improved regex: search for _s followed by digits,
+    # allowing for optional characters after it to handle potential name variations
+    match_seed = re.search(r"_s([0-9]+)(?:$|_)", run_id)
 
     sigma = float(match_sigma.group(1)) if match_sigma else None
     prob = float(match_p.group(1)) if match_p else None
@@ -95,13 +104,22 @@ for run in RUNS_DIR.iterdir():
     if not run.is_dir():
         continue
 
+    sigma, prob, seed = extract_params(run.name)
+
+    if seed is None or seed not in SEEDS:
+        continue
+
     metrics_file = run / "metrics.csv"
     summary_file = run / "summary.json"
     config_file = run / "config.yaml"
 
-    if not metrics_file.exists() or not summary_file.exists():
+    # DEBUG: See what is missing
+    if not metrics_file.exists():
+        print(f"DEBUG: Missing metrics.csv in {run.name}")
         continue
-
+    if not summary_file.exists():
+        print(f"DEBUG: Missing summary.json in {run.name}")
+        continue
     with open(config_file, "r") as f:
         cfg_data = yaml.safe_load(f)
     df_metrics = pd.read_csv(metrics_file)

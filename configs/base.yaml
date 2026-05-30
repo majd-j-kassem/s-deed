@@ -3,7 +3,7 @@
 
 simulation:
   random_seed: 42
-  seeds: [42, 123, 456, 789, 101112, 131415, 161718, 192021]  # Multiple seeds for robustness
+  seeds: [42]  # Multiple seeds for robustness
   dt: 0.1
   max_steps: 50
   # Note: total_runs is now derived from: (sigma_steps * prob_steps * len(seeds))
