@@ -1,16 +1,35 @@
-# Python artifacts
+# --- Python Artifacts ---
 __pycache__/
 *.py[cod]
 *$py.class
 .venv/
 venv/
-.DS_Store
+.env
 
-# Research outputs (Ignore generated binaries/data, keep architecture)
+# --- System & IDE Files ---
+.DS_Store
+.idea/
+.vscode/
+
+# --- Experiment & Generated Configs ---
+# Ignore generated configs (keep base.yaml as source of truth)
+configs/generated/
+
+# Ignore experiment run data and summaries
+experiments/runs/
+experiments/summary/
+
+# Keep directory structure but ignore files
+!experiments/runs/.gitkeep
+!experiments/summary/.gitkeep
+
+# --- Research/Result Plots (If used) ---
 results/data/*.csv
 results/plots/*.png
 results/plots/*.pdf
 !results/data/.gitkeep
 !results/plots/.gitkeep
+
+# --- Documentation ---
 tree.md
 STRUCTURE.md

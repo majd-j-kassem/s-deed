@@ -1,105 +1,156 @@
 # S-DEED Repository Structure Guide
 
-This document explains the purpose and role of every major directory and file in the S-DEED research framework.
-
-## Root Structure Overview
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `README.md` | File | Main project overview, architecture summary, setup instructions, and research motivation. |
-| `.gitignore` | File | Prevents unnecessary files (logs, PDFs, caches, build artifacts) from being tracked by Git. |
-| `requirements.txt` | File | Python dependency versions for reproducible experiments. |
-| `config.yaml` | File | Centralized simulation and experiment configuration parameters. |
-| `create_paper.sh` | Script | Utility script for quickly generating LaTeX paper templates and folders. |
-
-## Literature & Research Knowledge
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `literature/` | Directory | Central research knowledge repository used during study and implementation. |
-| `literature/notes/` | Directory | Markdown summaries, annotations, and implementation insights extracted from papers. |
-| `literature/surveys/` | Directory | Comparative reviews and thematic summaries across multiple papers. |
-| `literature/README.md` | File | Maps research papers to project modules and explains reading priorities. |
-| `literature/research_log/` | Directory | Daily research notes, experiment reflections, debugging insights, and idea evolution logs. |
-
-## Academic Paper Workspace
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `paper/` | Directory | Main academic writing workspace for the publication/manuscript. |
-| `paper/main.tex` | File | Primary LaTeX entry point for the paper. |
-| `paper/references.bib` | File | Bibliography database automatically synchronized with Zotero. |
-| `paper/sections/` | Directory | Modular LaTeX sections (Introduction, Methodology, Results, etc.). |
-| `paper/figures/` | Directory | Final figures and plots used inside the paper. |
-| `paper/build/` | Directory | Temporary LaTeX compilation artifacts and generated PDFs. |
-
-## Source Code (Core Framework)
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `src/` | Directory | Main implementation of the S-DEED framework. |
-| `src/environment.py` | File | Defines the stochastic 2-agent simulation environment. |
-| `src/noise_model.py` | File | Implements context-dependent GMM uncertainty injection. |
-| `src/estimator.py` | File | Particle Filter implementation for non-Gaussian state estimation. |
-| `src/risk.py` | File | Computes CVaR and probabilistic safety metrics. |
-| `src/planners.py` | File | Decision-making policies (deterministic and risk-aware planners). |
-| `src/metrics.py` | File | Computes evaluation metrics and breakdown statistics. |
-| `src/simulation.py` | File | Main integration loop connecting all framework components. |
-| `src/utils/` | Directory | Shared helper functions, reproducibility utilities, math helpers, and config loaders. |
-
-## Testing Infrastructure
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `tests/` | Directory | Unit and integration testing framework. |
-| `tests/test_estimator.py` | File | Verifies Particle Filter correctness and stability. |
-| `tests/test_risk.py` | File | Validates CVaR and risk metric computations. |
-| `tests/test_planners.py` | File | Tests planner decision logic under multiple risk conditions. |
-| `tests/conftest.py` | File | Shared fixtures and reusable test configurations. |
-
-## Experiment Management
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `experiments/` | Directory | Stores experiment configurations, outputs, and reproducibility artifacts. |
-| `experiments/configs/` | Directory | Individual YAML experiment configurations. |
-| `experiments/runs/` | Directory | Full outputs of each executed experiment run. |
-| `experiments/logs/` | Directory | Numerical logs and simulation outputs. |
-| `experiments/plots/` | Directory | Generated plots such as Decision Breakdown Curves. |
-
-## Automation Scripts
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `scripts/` | Directory | Automation utilities for experiments and paper workflows. |
-| `scripts/run_experiment.sh` | Script | Executes standardized experiment pipelines. |
-| `scripts/build_paper.sh` | Script | Compiles the LaTeX manuscript automatically. |
-| `scripts/export_notes.sh` | Script | Exports Zotero annotations and notes into Markdown summaries. |
-
-## Final Outputs
-
-| Path | Type | Purpose |
-| :--- | :--- | :--- |
-| `results/` | Directory | Curated final outputs used for publication and reporting. |
+This document describes the organization of the S-DEED research framework and explains the purpose of the major directories and files.
 
 ---
 
-## Research Philosophy of the Repository
+# Root Directory
 
-S-DEED is designed as a reproducible research-engineering framework focused on:
+| Path             | Purpose                                      |
+| ---------------- | -------------------------------------------- |
+| README.md        | Project overview and research motivation     |
+| STRUCTURE.md     | Repository structure documentation           |
+| pipeline.py      | Main experiment orchestration pipeline       |
+| requirements.txt | Python dependencies                          |
+| pyproject.toml   | Project configuration and packaging metadata |
 
-* Probabilistic state estimation under non-Gaussian uncertainty
-* Risk-aware autonomous decision-making
-* Decision degradation characterization
-* Failure regime analysis
-* Reliability evaluation of uncertainty-aware systems
+---
 
-The repository structure intentionally separates:
+# Configuration Management
 
-1.  Research literature and knowledge extraction
-2.  Academic writing and publication assets
-3.  Core source code and algorithms
-4.  Experiment tracking and reproducibility
-5.  Testing and validation infrastructure
+| Path               | Purpose                                      |
+| ------------------ | -------------------------------------------- |
+| configs/base.yaml  | Master experiment configuration              |
+| configs/generated/ | Automatically generated experiment scenarios |
 
-This separation ensures scalability, maintainability, and publication-grade reproducibility.
+The generated configurations are produced through parameter sweeps and Monte Carlo scenario generation.
+
+---
+
+# Core Framework
+
+| Path                | Purpose                                  |
+| ------------------- | ---------------------------------------- |
+| src/environment.py  | Stochastic simulation environment        |
+| src/noise_model.py  | Context-dependent uncertainty generation |
+| src/estimator.py    | Particle Filter implementation           |
+| src/simulation.py   | Main experiment execution loop           |
+| src/metrics.py      | Estimation and degradation metrics       |
+| src/risk.py         | Experimental risk-analysis utilities     |
+| src/planners.py     | Experimental planning modules            |
+| src/batch_runner.py | Batch experiment execution support       |
+| src/utils.py        | Shared utility functions                 |
+| src/plots.py        | Visualization helpers                    |
+
+---
+
+# Experiment Infrastructure
+
+| Path                  | Purpose                                   |
+| --------------------- | ----------------------------------------- |
+| experiments/runs/     | Individual experiment outputs             |
+| experiments/summary/  | Aggregated Monte Carlo results            |
+| experiments/logs/     | Experiment execution logs                 |
+| experiments/analysis/ | Research notebooks and analysis utilities |
+
+Each experiment run stores:
+
+* Configuration snapshot
+* Metadata
+* Metrics
+* Summary statistics
+* Generated plots
+
+---
+
+# Analysis Workspace
+
+| Path                                                   | Purpose                          |
+| ------------------------------------------------------ | -------------------------------- |
+| experiments/analysis/degradation_analysis.ipynb        | Degradation behavior exploration |
+| experiments/analysis/uncertainty_regime_analysis.ipynb | Uncertainty regime analysis      |
+| experiments/analysis/compare_runs.ipynb                | Cross-run comparisons            |
+| experiments/analysis/plot_utils.py                     | Shared plotting utilities        |
+
+---
+
+# Automation Scripts
+
+| Path                        | Purpose                       |
+| --------------------------- | ----------------------------- |
+| scripts/config_generator.py | Scenario generation           |
+| scripts/build_summary.py    | Monte Carlo aggregation       |
+| scripts/run_experiment.py   | Experiment execution          |
+| scripts/run_experiment.sh   | Shell wrapper for experiments |
+| scripts/build_paper.sh      | Paper compilation utility     |
+| scripts/export_notes.sh     | Research note export utility  |
+
+---
+
+# Research Knowledge Base
+
+| Path                       | Purpose                                   |
+| -------------------------- | ----------------------------------------- |
+| literature/papers/         | Research papers and references            |
+| literature/notes/          | Reading notes and implementation insights |
+| literature/RESEARCH_LOG.md | Ongoing research log                      |
+| literature/README.md       | Literature organization guide             |
+
+---
+
+# Academic Paper Workspace
+
+| Path                 | Purpose               |
+| -------------------- | --------------------- |
+| paper/main.tex       | Main manuscript       |
+| paper/references.bib | Bibliography database |
+| paper/sections/      | Paper sections        |
+| paper/figures/       | Publication figures   |
+| paper/build/         | Generated PDF outputs |
+
+---
+
+# Results Archive
+
+| Path           | Purpose                           |
+| -------------- | --------------------------------- |
+| results/data/  | Curated datasets                  |
+| results/plots/ | Final publication-quality figures |
+
+---
+
+# Testing
+
+| Path                      | Purpose                |
+| ------------------------- | ---------------------- |
+| tests/test_environment.py | Environment validation |
+| tests/test_noise_model.py | Noise model validation |
+| tests/test_integration.py | End-to-end testing     |
+
+---
+
+# Architecture Assets
+
+| Path          | Purpose                              |
+| ------------- | ------------------------------------ |
+| architecture/ | Diagrams, figures, and design assets |
+
+---
+
+# Current Research Focus
+
+The current version of S-DEED focuses on:
+
+* Non-Gaussian uncertainty modeling
+* Particle Filter behavior characterization
+* Estimation degradation analysis
+* Effective Sample Size (N_eff) dynamics
+* Breakdown and recovery detection
+* Monte Carlo robustness evaluation
+
+Future extensions may introduce:
+
+* Risk-aware planning
+* Decision degradation analysis
+* CVaR-based policy evaluation
+* Autonomous system resilience assessment

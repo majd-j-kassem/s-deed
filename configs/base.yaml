@@ -1,0 +1,87 @@
+# Base configuration for S-DEED experiments
+# Master configuration for simulation, environment, noise, estimator, and analysis parameters.
+
+simulation:
+  random_seed: 42
+  seeds: [42, 123, 456, 789, 101112, 131415, 161718, 192021]  # Multiple seeds for robustness
+  dt: 0.1
+  max_steps: 50
+  # Note: total_runs is now derived from: (sigma_steps * prob_steps * len(seeds))
+  # Current configuration results in: 10 * 6 * 5 = 300 runs
+
+environment:
+  ego_start: [0.0, 0.0]
+  ego_speed: 1.0
+  obstacle_start: [6.0, 2.0]
+  obstacle_velocity: [0.0, -0.5]
+  collision_threshold: 0.4
+  goal: [10.0, 0.0]
+
+physics_engine:
+  goal_threshold: 0.2
+  velocity_drift_std: 0.05
+
+noise_model:
+  critical_distance:
+    base: 3.0
+    adaptive: true
+    adaptation_std: 0.2
+  mu_nominal: [0.0, 0.0]
+  sigma_nominal:
+    base: 0.8
+    jitter: 0.015
+  mu_anomalous:
+    base: [0.1, -0.1]
+    variability: 0.015
+  sigma_anomalous:
+    base: 0.3
+    jitter: 0.01
+  anomaly_probability:
+    base_rate: 0.05
+    distance_multiplier: 3.0
+    max_anomaly_prob: 0.9
+    distance_sensitivity: false
+
+estimator:
+  num_particles: 200
+  process_noise: 0.01
+  measurement_noise: 0.2
+  resample_threshold: 0.35
+  n_eff_threshold: 0.6
+  recovery_threshold: 0.8
+  collapse_window: 3
+  recovery_error_threshold: 0.10
+
+evaluation:
+  severity_mapping:
+    stable: 0.0
+    degraded: 0.5
+    collapsed: 1.0
+  stability_threshold: 0.0
+
+analysis:
+  ci_method: "bootstrap"  
+  bootstrap_iterations: 1000
+  confidence_level: 0.95
+
+failure_model:
+  burst:
+    enabled: true
+    probability: 0.75
+    length_range: [20, 35]
+  regime_shift:
+    enabled: true
+    probability: 0.25
+    sigma_multiplier: 5
+  dropout:
+    enabled: true
+    probability: 0.3
+
+grid_search:
+  # Format: [start, end, steps]
+  sigma_range: [0.3, 5.0, 10]
+  prob_range: [0.2, 0.9, 6]
+
+output_directories:
+  runs_root: "experiments/runs"
+  summary_root: "experiments/summary"
